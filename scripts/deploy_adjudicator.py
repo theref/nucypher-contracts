@@ -8,7 +8,7 @@ def main(account_id=None):
     network_config = config["networks"][CURRENT_NETWORK]
 
     if CURRENT_NETWORK in LOCAL_BLOCKCHAIN_ENVIRONMENTS:
-        _, _, _, staking_escrow = deploy_mocks(deployer)
+        _, _, _, _, staking_escrow = deploy_mocks(deployer)
     else:
         staking_escrow = network_config.get("staking_escrow")
 
