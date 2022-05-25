@@ -21,6 +21,21 @@ from brownie import Contract, Wei
 TOTAL_SUPPLY = Wei("1_000_000_000 ether")  # TODO NU(1_000_000_000, 'NU').to_units()
 
 
+@pytest.fixture
+def creator(accounts):
+    return accounts[0]
+
+
+@pytest.fixture
+def account1(accounts):
+    return accounts[1]
+
+
+@pytest.fixture
+def account2(accounts):
+    return accounts[2]
+
+
 @pytest.fixture()
 def token(NuCypherToken, accounts):
     # Create an ERC20 token
