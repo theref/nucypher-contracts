@@ -12,18 +12,16 @@ contract Coordinator is Ownable {
 
     // Ritual
     event StartRitual(uint32 indexed ritualId, address indexed initiator, address[] nodes);
-    event StartTranscriptRound(uint32 indexed ritualId);
-    event StartAggregationRound(uint32 indexed ritualId);
+    event StartTranscriptRound(uint32 indexed ritualId, address verifier);
     // TODO: Do we want the public key here? If so, we want 2 events or do we reuse this event?
     event EndRitual(uint32 indexed ritualId, address indexed initiator, RitualState status);
 
-    // Node
-    event TranscriptCommitted(uint32 indexed ritualId, address indexed node, bytes32 transcriptDigest);
-    event AggregationCommitted(uint32 indexed ritualId, address indexed node, bytes32 aggregatedTranscriptDigest);
+
 
     // Admin
     event TimeoutChanged(uint32 oldTimeout, uint32 newTimeout);
     event MaxDkgSizeChanged(uint32 oldSize, uint32 newSize);
+    event VerifierChanged(address oldVerifier, address newVerifier);
 
     enum RitualState {
         NON_INITIATED,
@@ -61,6 +59,8 @@ contract Coordinator is Ownable {
 
     uint32 public timeout;
     uint32 public maxDkgSize;
+
+    address public verifier;
 
     constructor(uint32 _timeout, uint32 _maxDkgSize) {
         timeout = _timeout;
@@ -138,75 +138,7 @@ contract Coordinator is Ownable {
         // TODO: Compute cohort fingerprint as hash(nodes)
 
         emit StartRitual(id, msg.sender, nodes);
-        emit StartTranscriptRound(id);
+        emit StartTranscriptRound(id, verifier);
         return ritual.id;
-    }
-
-    function commitToTranscript(uint32 ritualId, uint256 nodeIndex, bytes32 transcriptCommitment) external {
-        Ritual storage ritual = rituals[ritualId];
-        require(
-            getRitualState(ritual) == RitualState.AWAITING_TRANSCRIPTS,
-            "Not waiting for transcripts"
-        );
-        Participant storage participant = ritual.participant[nodeIndex];
-        require(
-            participant.node == msg.sender,
-            "Node not part of ritual"
-        );
-        require(
-            participant.transcriptCommitment == bytes32(0),
-            "Node already posted transcript"
-        );
-
-        // Nodes commit to their transcript
-        participant.transcriptCommitment = transcriptCommitment;
-        emit TranscriptCommitted(ritualId, msg.sender, transcriptCommitment);
-        ritual.totalTranscripts++;
-
-        // end round
-        if (ritual.totalTranscripts == ritual.dkgSize){
-            emit StartAggregationRound(ritualId);
-        }
-    }
-
-    function commitToAggregation(uint32 ritualId, uint256 nodeIndex, bytes32 aggregatedTranscriptCommittment) external {
-        Ritual storage ritual = rituals[ritualId];
-        require(
-            getRitualState(ritual) == RitualState.AWAITING_AGGREGATIONS,
-            "Not waiting for aggregations"
-        );
-        Participant storage participant = ritual.participant[nodeIndex];
-        require(
-            participant.node == msg.sender,
-            "Node not part of ritual"
-        );
-        require(
-            !participant.aggregated,
-            "Node already posted aggregation"
-        );
-
-        // nodes commit to their aggregation result
-        participant.aggregated = true;
-        emit AggregationCommitted(ritualId, msg.sender, aggregatedTranscriptCommittment);
-
-        if (ritual.aggregatedTranscriptHash == bytes32(0)){
-            ritual.aggregatedTranscriptHash = aggregatedTranscriptCommittment;
-        } else if (ritual.aggregatedTranscriptHash != aggregatedTranscriptCommittment){
-            ritual.aggregationMismatch = true;
-            emit EndRitual(ritualId, ritual.initiator, RitualState.INVALID);
-            // TODO: Invalid ritual
-            // TODO: Consider freeing ritual storage
-            return;
-        }
-        
-        ritual.totalAggregations++;
-        
-        // end round - Last node posting aggregation will finalize 
-        if (ritual.totalAggregations == ritual.dkgSize){
-            emit EndRitual(ritualId, ritual.initiator, RitualState.FINALIZED);
-            // TODO: Last node extracts public key bytes from aggregated transcript
-            // and store in ritual.publicKey
-            ritual.publicKey[0] = bytes1(0x42);
-        }
     }
 }
