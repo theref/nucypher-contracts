@@ -3,6 +3,7 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "../SimplePREApplication.sol";
 
 /**
 * @title Coordinator
@@ -61,10 +62,12 @@ contract Coordinator is Ownable {
 
     uint32 public timeout;
     uint32 public maxDkgSize;
+    SimplePREApplication public preApplication;
 
-    constructor(uint32 _timeout, uint32 _maxDkgSize) {
+    constructor(uint32 _timeout, uint32 _maxDkgSize, SimplePREApplication _preApplication) {
         timeout = _timeout;
         maxDkgSize = _maxDkgSize;
+        preApplication = _preApplication;
     }
 
     function getRitualState(uint256 ritualId) external view returns (RitualState){
@@ -122,7 +125,7 @@ contract Coordinator is Ownable {
         uint32 id = uint32(rituals.length);
         Ritual storage ritual = rituals.push();
         ritual.id = id;  // TODO: Possibly redundant
-        ritual.initiator = msg.sender;  // TODO: Consider sponsor model
+        ritual.initiator = preApplication.stakingProviderFromOperator(msg.sender);  // TODO: Consider sponsor model
         ritual.dkgSize = uint32(nodes.length);
         ritual.initTimestamp = uint32(block.timestamp);
 
@@ -137,20 +140,21 @@ contract Coordinator is Ownable {
         }
         // TODO: Compute cohort fingerprint as hash(nodes)
 
-        emit StartRitual(id, msg.sender, nodes);
+        emit StartRitual(id, ritual.initiator, nodes);
         emit StartTranscriptRound(id);
         return ritual.id;
     }
 
     function commitToTranscript(uint32 ritualId, uint256 nodeIndex, bytes32 transcriptCommitment) external {
         Ritual storage ritual = rituals[ritualId];
+        address sender = preApplication.stakingProviderFromOperator(msg.sender);
         require(
             getRitualState(ritual) == RitualState.AWAITING_TRANSCRIPTS,
             "Not waiting for transcripts"
         );
         Participant storage participant = ritual.participant[nodeIndex];
         require(
-            participant.node == msg.sender,
+            participant.node == sender,
             "Node not part of ritual"
         );
         require(
@@ -160,7 +164,7 @@ contract Coordinator is Ownable {
 
         // Nodes commit to their transcript
         participant.transcriptCommitment = transcriptCommitment;
-        emit TranscriptCommitted(ritualId, msg.sender, transcriptCommitment);
+        emit TranscriptCommitted(ritualId, sender, transcriptCommitment);
         ritual.totalTranscripts++;
 
         // end round
@@ -171,13 +175,14 @@ contract Coordinator is Ownable {
 
     function commitToAggregation(uint32 ritualId, uint256 nodeIndex, bytes32 aggregatedTranscriptCommittment) external {
         Ritual storage ritual = rituals[ritualId];
+        address sender = preApplication.stakingProviderFromOperator(msg.sender);
         require(
             getRitualState(ritual) == RitualState.AWAITING_AGGREGATIONS,
             "Not waiting for aggregations"
         );
         Participant storage participant = ritual.participant[nodeIndex];
         require(
-            participant.node == msg.sender,
+            participant.node == sender,
             "Node not part of ritual"
         );
         require(
@@ -187,7 +192,7 @@ contract Coordinator is Ownable {
 
         // nodes commit to their aggregation result
         participant.aggregated = true;
-        emit AggregationCommitted(ritualId, msg.sender, aggregatedTranscriptCommittment);
+        emit AggregationCommitted(ritualId, sender, aggregatedTranscriptCommittment);
 
         if (ritual.aggregatedTranscriptHash == bytes32(0)){
             ritual.aggregatedTranscriptHash = aggregatedTranscriptCommittment;
