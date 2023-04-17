@@ -158,6 +158,10 @@ contract Coordinator is Ownable {
             "Node not part of ritual"
         );
         require(
+            preApplication.isAuthorized(sender),
+            "Node stake not Authorized"
+        );
+        require(
             participant.transcriptCommitment == bytes32(0),
             "Node already posted transcript"
         );
@@ -184,6 +188,10 @@ contract Coordinator is Ownable {
         require(
             participant.node == sender,
             "Node not part of ritual"
+        );
+        require(
+            preApplication.isAuthorized(sender),
+            "Node stake not Authorized"
         );
         require(
             !participant.aggregated,
