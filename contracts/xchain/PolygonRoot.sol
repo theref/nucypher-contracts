@@ -12,12 +12,14 @@ contract PolygonRoot is FxBaseRootTunnel, IUpdatableStakeInfo {
     constructor(
         address _checkpointManager, 
         address _fxRoot,
-        address _source
+        address _source,
+        address _fxChildTunnel
     ) 
         FxBaseRootTunnel(_checkpointManager, _fxRoot) 
     {
         require(_source != address(0), "Wrong input parameters");
         source = _source;
+        fxChildTunnel = _fxChildTunnel;
     }
 
     /**
@@ -35,17 +37,28 @@ contract PolygonRoot is FxBaseRootTunnel, IUpdatableStakeInfo {
     function _processMessageFromChild(bytes memory data) internal override {}
 
     function updateOperator(address stakingProvider, address operator) external override onlySource {
-        bytes memory message = abi.encodeWithSelector(IUpdatableStakeInfo.updateOperator.selector, stakingProvider, operator);
+        bytes memory message = abi.encodeWithSelector(
+            IUpdatableStakeInfo.updateOperator.selector,
+            stakingProvider,
+            operator
+        );
         _sendMessageToChild(message);
     }
 
     function updateAmount(address stakingProvider, uint96 amount) external override onlySource {
-        bytes memory message = abi.encodeWithSelector(IUpdatableStakeInfo.updateAmount.selector, stakingProvider, amount);
+        bytes memory message = abi.encodeWithSelector(
+            IUpdatableStakeInfo.updateAmount.selector,
+            stakingProvider,
+            amount
+        );
         _sendMessageToChild(message);
     }
 
     function batchUpdate(bytes32[] calldata updateInfo) external override onlySource {
-        bytes memory message = abi.encodeWithSelector(IUpdatableStakeInfo.batchUpdate.selector, updateInfo);
+        bytes memory message = abi.encodeWithSelector(
+            IUpdatableStakeInfo.batchUpdate.selector,
+            updateInfo
+        );
         _sendMessageToChild(message);
     }
 }
