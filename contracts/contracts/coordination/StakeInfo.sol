@@ -21,6 +21,7 @@ contract StakeInfo is AccessControl, IUpdatableStakeInfo, IAccessControlApplicat
     }
 
     constructor(address[] memory updaters){
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         for(uint i = 0; i < updaters.length; i++){
             _grantRole(UPDATE_ROLE, updaters[i]);
         }
