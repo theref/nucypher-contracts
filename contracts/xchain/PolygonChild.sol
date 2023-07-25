@@ -6,11 +6,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract PolygonChild is FxBaseChildTunnel, Ownable {
 
-    event MessageReceived(
-        address indexed sender,
-        bytes data
-    );
-
     address public stakeInfoAddress;
     
     constructor(address _fxChild) FxBaseChildTunnel(_fxChild) {}
@@ -20,7 +15,6 @@ contract PolygonChild is FxBaseChildTunnel, Ownable {
         address sender,
         bytes memory data
     ) internal override validateSender(sender) {
-        emit MessageReceived(sender, data);
         (bool success, /* returnId */ ) = stakeInfoAddress.call(data);
     }
 
