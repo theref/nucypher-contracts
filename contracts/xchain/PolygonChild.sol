@@ -22,7 +22,4 @@ contract PolygonChild is FxBaseChildTunnel {
         (bool success, /* returnId */ ) = stakeInfo.call(data);
     }
 
-    function sendMessageToRoot(bytes memory message) public {
-        _sendMessageToRoot(message);
-    }
 }

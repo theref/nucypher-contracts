@@ -8,7 +8,6 @@ import "../contracts/coordination/IUpdatableStakeInfo.sol";
 contract PolygonRoot is FxBaseRootTunnel, IUpdatableStakeInfo {
 
     address immutable public source;
-    bytes public latestData;
 
     constructor(
         address _checkpointManager, 
@@ -30,9 +29,10 @@ contract PolygonRoot is FxBaseRootTunnel, IUpdatableStakeInfo {
         _;
     }
 
-    function _processMessageFromChild(bytes memory data) internal override {
-        latestData = data;
-    }
+    /**
+    * @dev Implemented to comply with FxBaseRootTunnel interface, but unused
+    */
+    function _processMessageFromChild(bytes memory data) internal override {}
 
     function updateOperator(address stakingProvider, address operator) external override onlySource {
         bytes memory message = abi.encodeWithSelector(IUpdatableStakeInfo.updateOperator.selector, stakingProvider, operator);
