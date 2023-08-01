@@ -30,6 +30,12 @@ contract StakeInfo is AccessControl, IUpdatableStakeInfo, IAccessControlApplicat
     mapping(address => Stake) public stakes;
     mapping(address => address) private operatorToProvider;
 
+    function addUpdaters(address[] memory updaters) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        for(uint i = 0; i < updaters.length; i++){
+            _grantRole(UPDATE_ROLE, updaters[i]);
+        }
+    }
+
     function stakingProviderFromOperator(address _operator) external view returns (address){
         return operatorToProvider[_operator];
     }
