@@ -18,5 +18,4 @@ def main(id=None):
         subscription_manager_logic.address, proxy_admin.address, calldata, sender=deployer
     )
 
-    subscription_manager = project.SubscriptionManager.at(transparent_proxy.address)
-    return subscription_manager
+    return project.SubscriptionManager.at(transparent_proxy.address)

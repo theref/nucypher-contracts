@@ -24,21 +24,17 @@ TOTAL_SUPPLY = Web3.to_wei(1_000_000_000, "ether")  # TODO NU(1_000_000_000, 'NU
 
 @pytest.fixture()
 def token(project, accounts):
-    # Create an ERC20 token
-    token = accounts[0].deploy(project.NuCypherToken, TOTAL_SUPPLY)
-    return token
+    return accounts[0].deploy(project.NuCypherToken, TOTAL_SUPPLY)
 
 
 @pytest.fixture()
 def worklock(project, token, accounts):
-    worklock = accounts[0].deploy(project.WorkLockForStakingEscrowMock, token.address)
-    return worklock
+    return accounts[0].deploy(project.WorkLockForStakingEscrowMock, token.address)
 
 
 @pytest.fixture()
 def threshold_staking(project, accounts):
-    threshold_staking = accounts[0].deploy(project.ThresholdStakingForStakingEscrowMock)
-    return threshold_staking
+    return accounts[0].deploy(project.ThresholdStakingForStakingEscrowMock)
 
 
 @pytest.fixture(params=[False, True])

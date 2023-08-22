@@ -27,8 +27,7 @@ def transparent_proxy(proxy_admin, subscription_manager_logic, accounts):
 
 @pytest.fixture(scope="session")
 def subscription_manager(transparent_proxy, project):
-    sm = project.SubscriptionManager.at(transparent_proxy.address)
-    return sm
+    return project.SubscriptionManager.at(transparent_proxy.address)
 
 
 def test_initial_parameters(subscription_manager, subscription_manager_logic):

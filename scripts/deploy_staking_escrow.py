@@ -19,11 +19,10 @@ def main(account_id=None):
         t_staking = deployments_config.get("t_staking")
         work_lock = deployments_config.get("work_lock")
 
-    staking_escrow = project.StakingEscrow.deploy(
+    return project.StakingEscrow.deploy(
         nucypher_token,
         work_lock,
         t_staking,
         sender=deployer,
         publish_source=deployments_config.get("verify"),
     )
-    return staking_escrow

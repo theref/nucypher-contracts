@@ -26,8 +26,7 @@ from nucypher_core.umbral import SecretKey, Signer, generate_kfrags, reencrypt
 
 @pytest.fixture()
 def deserializer(project, accounts):
-    contract = accounts[0].deploy(project.UmbralDeserializerMock)
-    return contract
+    return accounts[0].deploy(project.UmbralDeserializerMock)
 
 
 @pytest.fixture(scope="module")

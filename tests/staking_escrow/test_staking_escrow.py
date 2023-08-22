@@ -30,7 +30,7 @@ def test_staking_from_worklock(project, accounts, token, worklock, escrow):
     Tests for staking method: depositFromWorkLock
     """
 
-    creator, staker1, staker2, staker3 = accounts[0:4]
+    creator, staker1, staker2, staker3 = accounts[:4]
 
     # Give WorkLock and Staker some coins
     value = Web3.to_wei(15_000, "ether")  # TODO
@@ -157,7 +157,13 @@ def test_slashing(accounts, token, worklock, threshold_staking, escrow):
 
 
 def test_request_merge(accounts, threshold_staking, escrow):
-    creator, staker1, staker2, staking_provider_1, staking_provider_2 = accounts[0:5]
+    (
+        creator,
+        staker1,
+        staker2,
+        staking_provider_1,
+        staking_provider_2,
+    ) = accounts[:5]
 
     # Can't request merge directly
     with ape.reverts():
@@ -241,7 +247,7 @@ def test_request_merge(accounts, threshold_staking, escrow):
 
 
 def test_withdraw(accounts, token, worklock, threshold_staking, escrow, chain):
-    creator, staker, staking_provider = accounts[0:3]
+    creator, staker, staking_provider = accounts[:3]
 
     # Deposit some tokens
     value = Web3.to_wei(ONE_HOUR, "ether")  # Exclude rounding error  # TODO NU(ONE_HOUR, 'NU').to_units()
@@ -337,7 +343,7 @@ def test_withdraw(accounts, token, worklock, threshold_staking, escrow, chain):
 
 
 def test_vesting(accounts, token, worklock, escrow, chain):
-    creator, staker1, staker2, staker3, staker4 = accounts[0:5]
+    creator, staker1, staker2, staker3, staker4 = accounts[:5]
 
     value = Web3.to_wei(15_000, "ether")  # TODO
     token.transfer(worklock.address, 10 * value, sender=creator)

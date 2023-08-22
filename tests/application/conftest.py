@@ -32,8 +32,7 @@ MIN_OPERATOR_SECONDS = 24 * 60 * 60
 
 @pytest.fixture()
 def threshold_staking(project, accounts):
-    threshold_staking = accounts[0].deploy(project.ThresholdStakingForPREApplicationMock)
-    return threshold_staking
+    return accounts[0].deploy(project.ThresholdStakingForPREApplicationMock)
 
 
 @pytest.fixture()

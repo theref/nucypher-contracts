@@ -23,8 +23,7 @@ from web3 import Web3
 
 @pytest.fixture(scope="module")
 def snapshot(accounts, project):
-    contract = accounts[0].deploy(project.SnapshotMock)
-    return contract
+    return accounts[0].deploy(project.SnapshotMock)
 
 
 timestamps = (0x00000001, 0x00001000, 0xFF000000, 0xFFFF0001)

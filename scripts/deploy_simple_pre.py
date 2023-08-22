@@ -18,11 +18,10 @@ def main(account_id=None):
     else:
         t_staking = deployments_config.get("t_staking")
 
-    simple_pre = project.SimplePREApplication.deploy(
+    return project.SimplePREApplication.deploy(
         t_staking,
         deployments_config.get("pre_min_authorization"),
         deployments_config.get("pre_min_operator_seconds"),
         sender=deployer,
         publish_source=deployments_config.get("verify"),
     )
-    return simple_pre

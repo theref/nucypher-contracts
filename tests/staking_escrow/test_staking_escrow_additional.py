@@ -118,7 +118,7 @@ def test_upgrading(accounts, token, project):
 
 
 def test_measure_work(accounts, token, worklock, escrow):
-    creator, staker, *everyone_else = accounts[0:]
+    creator, staker, *everyone_else = accounts[:]
     total_supply = token.totalSupply()
 
     # Measured work must be 0 and completed work must be maximum even before deposit

@@ -34,8 +34,7 @@ from nucypher_core.umbral import PublicKey, SecretKey, Signature, Signer
 def canonical_address_from_umbral_key(public_key: PublicKey) -> bytes:
     pubkey_compressed_bytes = bytes(public_key)
     eth_pubkey = EthKeyAPI.PublicKey.from_compressed_bytes(pubkey_compressed_bytes)
-    canonical_address = eth_pubkey.to_canonical_address()
-    return canonical_address
+    return eth_pubkey.to_canonical_address()
 
 
 def keccak_digest(*messages: bytes) -> bytes:
@@ -64,8 +63,7 @@ def recover_address_eip_191(message: bytes, signature: bytes) -> str:
     """
     signable_message = encode_defunct(primitive=message)
     recovery = Account.recover_message(signable_message=signable_message, signature=signature)
-    recovered_address = to_checksum_address(recovery)
-    return recovered_address
+    return to_checksum_address(recovery)
 
 
 def verify_eip_191(address: str, message: bytes, signature: bytes) -> bool:
@@ -73,8 +71,7 @@ def verify_eip_191(address: str, message: bytes, signature: bytes) -> bool:
     EIP-191 Compatible signature verification for usage with w3.eth.sign.
     """
     recovered_address = recover_address_eip_191(message=message, signature=signature)
-    signature_is_valid = recovered_address == to_checksum_address(address)
-    return signature_is_valid
+    return recovered_address == to_checksum_address(address)
 
 
 ALGORITHM_KECCAK256 = 0
@@ -131,8 +128,7 @@ def pubkey_as_uncompressed_bytes(umbral_pubkey):
 
 @pytest.fixture()
 def signature_verifier(project, accounts):
-    contract = accounts[0].deploy(project.SignatureVerifierMock)
-    return contract
+    return accounts[0].deploy(project.SignatureVerifierMock)
 
 
 def test_recover(signature_verifier):
