@@ -23,6 +23,9 @@ dependencies:
   - name: threshold
     github: threshold-network/solidity-contracts
     version: 1.2.1
+  - name: account-abstraction
+    github: eth-infinitism/account-abstraction
+    version: 0.7.0
 
 solidity:
   version: 0.8.23
